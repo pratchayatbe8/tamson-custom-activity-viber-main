@@ -131,24 +131,24 @@ router.get('/config.json', (req, res) => {
                 "timeout": 100000,
                 "retryDelay": 10000,
                 "concurrentRequests": 1,
-                "url": `https://${req.headers.host}/custom-activity/execute`,
+                "url": `https://${req.headers.host}/viber/custom-activity-main/execute`,
                 "verb": "POST",
                 "useJwt": true
             }
         },
         "configurationArguments": {
             "save": {
-                "url": `https://${req.headers.host}/custom-activity/save`,
+                "url": `https://${req.headers.host}/viber/custom-activity-main/save`,
                 "verb": "POST",
                 "useJwt": true
             },
             "publish": {
-                "url": `https://${req.headers.host}/custom-activity/publish`,
+                "url": `https://${req.headers.host}/viber/custom-activity-main/publish`,
                 "verb": "POST",
                 "useJwt": true
             },
             "validate": {
-                "url": `https://${req.headers.host}/custom-activity/validate`,
+                "url": `https://${req.headers.host}/viber/custom-activity-main/validate`,
                 "verb": "POST",
                 "useJwt": true
             }

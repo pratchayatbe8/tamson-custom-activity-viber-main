@@ -286,7 +286,7 @@ export function loadPreviewContent(content, selectedOA, isLoad) {
         let messageType = getCheckedAttr('select-type', 'data-value');
 
         if (messageType === 'ViberOA')
-            endpoint = `/custom-activity/getContent/${content}`;
+            endpoint = `/viber/custom-activity-main/getContent/${content}`;
 
         fetch(endpoint, {
             method: 'GET',

@@ -17,50 +17,44 @@ const viber = require('./modules/vietguys')
 const util = require('./modules/util')
 const controller = require('./custom-activity/custom_activity_controller')
 
+const viberRouter = express.Router(); // <--- ADD THIS LINE
+
 // --------------------------- Middleware ---------------------------
 
 // Parse incoming requests
-app.use(bodyParser.raw({ type: 'application/jwt' })); // For JWT payloads
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.text());
+viberRouter.use(bodyParser.raw({ type: 'application/jwt' })); // For JWT payloads
+viberRouter.use(express.json());
+viberRouter.use(express.urlencoded({ extended: true }));
+viberRouter.use(express.text());
 // --------------------------- Static Assets ------------------------
-app.use('/slds', express.static(path.join(__dirname, 'node_modules/@salesforce-ux/design-system/assets')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'publicFiles')));
+viberRouter.use('/slds', express.static(path.join(__dirname, 'node_modules/@salesforce-ux/design-system/assets')));
+viberRouter.use('/images', express.static(path.join(__dirname, 'images')));
+viberRouter.use(express.static(path.join(__dirname, 'public')));
+viberRouter.use(express.static(path.join(__dirname, 'publicFiles')));
 
 // --------------------------- View Engine --------------------------
 app.set('view engine', 'ejs');
 
 // --------------------------- Routes -------------------------------
 const customActivityRouter = require('./custom-activity/custom_activity_routes');
-app.use('/custom-activity', customActivityRouter);
-app.use('/custom-content-block', customContentBlockRouter);
+viberRouter.use('/custom-activity-main', customActivityRouter);
+viberRouter.use('/custom-content-block', customContentBlockRouter);
 
 // Health Check Endpoint
-app.get('/health', (req, res) => res.status(200).send('OK VIBER\n'));
-app.get('/icon.png', (req, res) => {
+viberRouter.get('/health', (req, res) => res.status(200).send('OK VIBER\n'));
+viberRouter.get('/icon.png', (req, res) => {
   res.writeHead(301, {
     Location: req.url.replace('/icon.png', '/assets/icons/viber_icon_80.png')
 }).end();
 })
-//This is use for Viber registration domain
-app.get('/', (req, res)=> {
-    res.send('<html><head><meta name="viber-platform-site-verification" content="NVxbSfRASoH6tAS7jDHqKMhUqsY6g0SsDJOv" /></head><body></body></html>');
-  });
-app.get('/viber_verifierNVxbSfRASoH6tAS7jDHqKMhUqsY6g0SsDJOv.html', (req, res) => {
-  res.sendFile(
-    path.join(__dirname, 'public/js', 'viber_verifierNVxbSfRASoH6tAS7jDHqKMhUqsY6g0SsDJOv.html')
-  );
-});
+
   
-app.post('/webhook', (req, res) => {
+viberRouter.post('/webhook', (req, res) => {
   webhook.processRequest(req, res);
   res.sendStatus(200);
 })
 
-app.post('/mcTemplates', async (req, res) => {
+viberRouter.post('/mcTemplates', async (req, res) => {
   try {
     const contentBlocks = await controller.getCustomContentBlocks();
 
@@ -93,7 +87,9 @@ app.post('/mcTemplates', async (req, res) => {
  * ============================================================================
  */
 
-const port = process.env.PORT || 3001;
+app.use('/viber', viberRouter);
+
+const port = process.env.PORT || 3002;
 
 // --------------------------- local -------------------------------
 app.listen(port, () => {console.log(`Server is listening on port ${port}`);});

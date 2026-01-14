@@ -91,9 +91,11 @@ webhook.processRequest = async (req, res) => {
     ----------------------------------*/
     await mc.upsertDERow(config.sfmc.logDeName, updatePayload);
 
-    logger.info(
-      `[Webhook] Successfully processed | status=${data.msg_status}, transaction_id=${data.transaction_id}`
-    );
+    if (process.env.DEBUG_LOG === 'true') {
+      logger.info(
+        `[Webhook] Successfully processed | status=${data.msg_status}, transaction_id=${data.transaction_id}`
+      );
+    }
 
     return res.status(200).json({ message: 'Processed successfully' });
 

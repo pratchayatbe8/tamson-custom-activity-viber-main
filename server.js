@@ -38,7 +38,7 @@ viberRouter.use(express.urlencoded({ extended: true }));
 viberRouter.use(express.text({ type: '*/*' }));
 viberRouter.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    logger.warn(`[viberRouter] Invalid JSON received: ${req.rawBody}`);
+    console.log(`[viberRouter] Invalid JSON received: ${req.rawBody}`);
     return res.status(400).json({
       message: 'Invalid JSON payload'
     });

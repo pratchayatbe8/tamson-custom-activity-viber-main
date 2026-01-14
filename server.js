@@ -51,7 +51,7 @@ viberRouter.get('/icon.png', (req, res) => {
   
 viberRouter.post('/webhook', (req, res) => {
   webhook.processRequest(req, res);
-  res.sendStatus(200);
+  // res.sendStatus(200);
 })
 
 viberRouter.post('/mcTemplates', async (req, res) => {

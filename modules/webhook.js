@@ -11,52 +11,56 @@ webhook.processRequest = async (req, res) => {
     const event = req.body;
 
     /* ---------------------------------
-       1. Basic payload existence check
+       1. Validate request body
     ----------------------------------*/
     if (!event || typeof event !== 'object') {
-      logger.warn('[Webhook] Invalid or empty body');
+      logger.warn(`[Webhook] Invalid or empty request body`);
       return res.status(400).json({ message: 'Invalid request body' });
     }
 
-    if (process.env.DEBUG_LOG) {
-      logger.info('[Webhook] Payload:', JSON.stringify(event));
+    /* ---------------------------------
+       2. Debug logging (payload)
+    ----------------------------------*/
+    if (process.env.DEBUG_LOG === 'true') {
+      logger.info(`[Webhook] Payload: ${JSON.stringify(event)}`);
     }
 
     /* ---------------------------------
-       2. Validate platform-level error
+       3. Validate upstream error flag
     ----------------------------------*/
     if (event.error !== 0) {
-      logger.warn('[Webhook] Upstream error flag detected', event.error);
+      logger.warn(
+        `[Webhook] Ignored event due to upstream error flag: ${event.error}`
+      );
       return res.status(200).json({ message: 'Ignored (error flag)' });
     }
 
     /* ---------------------------------
-       3. Validate required data fields
+       4. Validate data object
     ----------------------------------*/
     const data = event.data;
 
     if (!data) {
-      logger.warn('[Webhook] Missing data object');
+      logger.warn(`[Webhook] Missing data object`);
       return res.status(400).json({ message: 'Missing data object' });
     }
 
     if (data.channel !== 'viber') {
-      logger.warn('[Webhook] Unsupported channel:', data.channel);
+      logger.warn(`[Webhook] Unsupported channel: ${data.channel}`);
       return res.status(403).json({ message: 'Unsupported channel' });
     }
 
     if (!data.msg_status || !data.transaction_id) {
-      logger.warn('[Webhook] Missing required fields', {
-        msg_status: data.msg_status,
-        transaction_id: data.transaction_id
-      });
+      logger.warn(
+        `[Webhook] Missing required fields | msg_status=${data.msg_status}, transaction_id=${data.transaction_id}`
+      );
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     /* ---------------------------------
-       4. Handle message status
+       5. Build update payload
     ----------------------------------*/
-    let updatePayload;
+    let updatePayload = null;
 
     switch (data.msg_status) {
       case 'DELIVRD':
@@ -76,22 +80,31 @@ webhook.processRequest = async (req, res) => {
         break;
 
       default:
-        logger.info('[Webhook] Ignored msg_status:', data.msg_status);
+        logger.info(
+          `[Webhook] Ignored msg_status: ${data.msg_status}`
+        );
         return res.status(200).json({ message: 'Ignored status' });
     }
 
     /* ---------------------------------
-       5. Upsert to SFMC
+       6. Upsert to SFMC
     ----------------------------------*/
     await mc.upsertDERow(config.sfmc.logDeName, updatePayload);
+
+    logger.info(
+      `[Webhook] Successfully processed | status=${data.msg_status}, transaction_id=${data.transaction_id}`
+    );
 
     return res.status(200).json({ message: 'Processed successfully' });
 
   } catch (err) {
-    logger.error('[Webhook] Unhandled exception', err);
+    logger.error(
+      `[Webhook] Unhandled exception: ${err?.message || err}`
+    );
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 module.exports = webhook; 

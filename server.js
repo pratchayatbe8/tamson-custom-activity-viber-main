@@ -22,10 +22,31 @@ const viberRouter = express.Router(); // <--- ADD THIS LINE
 // --------------------------- Middleware ---------------------------
 
 // Parse incoming requests
-viberRouter.use(bodyParser.raw({ type: 'application/jwt' })); // For JWT payloads
-viberRouter.use(express.json());
+// viberRouter.use(bodyParser.raw({ type: 'application/jwt' })); // For JWT payloads
+// viberRouter.use(express.json());
+// viberRouter.use(express.urlencoded({ extended: true }));
+// viberRouter.use(express.text());
+
+viberRouter.use(bodyParser.raw({ type: 'application/jwt' }));
+viberRouter.use(express.json({
+  strict: true,
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString();
+  }
+}));
 viberRouter.use(express.urlencoded({ extended: true }));
-viberRouter.use(express.text());
+viberRouter.use(express.text({ type: '*/*' }));
+viberRouter.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    logger.warn(`[viberRouter] Invalid JSON received: ${req.rawBody}`);
+    return res.status(400).json({
+      message: 'Invalid JSON payload'
+    });
+  }
+  next(err);
+});
+
+
 // --------------------------- Static Assets ------------------------
 viberRouter.use('/slds', express.static(path.join(__dirname, 'node_modules/@salesforce-ux/design-system/assets')));
 viberRouter.use('/images', express.static(path.join(__dirname, 'images')));

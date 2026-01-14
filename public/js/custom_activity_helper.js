@@ -382,7 +382,7 @@ export function loadContent(messageType, selectedValue, selectedName, oa, connec
 
     //Load the Custom Content Blocks
     if (messageType === 'ViberOA') {
-        fetch('/custom-activity/getCustomContentBlocks', {
+        fetch('/viber/custom-activity-main/getCustomContentBlocks', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

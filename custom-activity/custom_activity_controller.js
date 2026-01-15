@@ -118,7 +118,7 @@ async function process(body) {
         if (viberResponse.error === 0) {
             viberMessageId = viberResponse.data.transaction_id;
             mcRecord['API_Response_Code'] = viberResponse.error;
-
+            mcRecord['API_Response_Message'] = viberResponse.message;
         }
         else { //Viber return error
             logger.error(`[Viber Response Error] - ${obj.contactKey}-${obj.uid} - ${JSON.stringify(viberResponse)}`);

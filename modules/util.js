@@ -28,7 +28,7 @@ util.getViberAccessToken = async (oaIdOrAppId) => {
         },
         'operator' : 'OR',
         'rightOperand' : {
-            'leftOperand': 'App_ID',
+            'leftOperand': 'OA_ID',
             'operator': 'equals',
             'rightOperand': oaIdOrAppId
         }

@@ -101,9 +101,7 @@ async function process(body) {
                     "image": uData ? uData.photo : ""
                 }
             }
-            if (process.env.DEBUG_LOG === 'true') {
-                console.log('[process] DEBUG: viberPayload: ', viberPayload);
-            }
+            console.log('[process] DEBUG: viberPayload: ', viberPayload);
 
         }
         else {

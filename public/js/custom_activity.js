@@ -216,7 +216,7 @@ function save() {
         viberContentId: getCheckedAttr('select-content', 'data-value'),
         viberContentName: getCheckedAttr('select-content', 'data-name'),
         viberAccount: getCheckedAttr('select-account', 'data-value'),
-        viberAccount: getCheckedAttr('select-account', 'data-key'),
+        viberAccountKey: getCheckedAttr('select-account', 'data-key'),
         viberAccountName: getCheckedAttr('select-account', 'data-name'),
         viberContentObject: sharedObject.payload.viberContentObject,
         activityId: sharedObject.payload.id,

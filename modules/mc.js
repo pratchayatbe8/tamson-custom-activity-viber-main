@@ -28,61 +28,74 @@ const IET_Client = new ET_Client(clientId, clientSecret, stack, {
 const mc = {};
 
 mc.getDERows = async (dataExtensionName, fields, filter) => {
-    const options = {
-        Name: dataExtensionName,
-        props: fields
-    }
+    const MAX_ATTEMPTS = 3;
+    const RETRY_DELAY_MS = 1000;
 
-    if (filter)
-        options.filter = filter;
-    const deRow = IET_Client.dataExtensionRow(options);
-    return new Promise((resolve, reject) => {
-        let lData = [];
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                const options = {
+                    Name: dataExtensionName,
+                    props: fields
+                };
 
-        deRow.get((err, response) => {
-            if (err) {
-                console.log('[mc.getDERows] ERROR: ' + JSON.stringify(err));
-                reject(err);
-            }
-            else {
-                try {
-                    let hasRows = response.body.Results.length > 0 && 'Properties' in response.body.Results[0] && 'Property' in response.body.Results[0]['Properties'];
-                    if (hasRows) {
-                        let body = response.body.Results;
+                if (filter) options.filter = filter;
+                
+                const deRow = IET_Client.dataExtensionRow(options);
 
-                        JSONPath('$..Property', body, (payload) => {
-                            var data = new Object;
+                deRow.get((err, response) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    
+                    try {
+                        let hasRows = response.body.Results.length > 0 && 
+                                      'Properties' in response.body.Results[0] && 
+                                      'Property' in response.body.Results[0]['Properties'];
+                        
+                        if (hasRows) {
+                            let lData = [];
+                            let body = response.body.Results;
 
-                            if (Array.isArray(payload)) {
-                                payload.forEach(member => {
+                            JSONPath('$..Property', body, (payload) => {
+                                var data = new Object();
+                                if (Array.isArray(payload)) {
+                                    payload.forEach(member => {
+                                        if ('Name' in member && 'Value' in member) {
+                                            data[member['Name']] = member['Value'];
+                                        }
+                                    });
+                                } else {
+                                    let member = payload;
                                     if ('Name' in member && 'Value' in member) {
                                         data[member['Name']] = member['Value'];
                                     }
-                                });
-                            }
-                            else {
-                                let member = payload;
-                                if ('Name' in member && 'Value' in member) {
-                                    data[member['Name']] = member['Value'];
                                 }
-                            }
-
-                            lData.push(data);
-
-                        });
-
-                        resolve(lData);
+                                lData.push(data);
+                            });
+                            resolve(lData);
+                        } else {
+                            resolve(response.body.Results); // No data
+                        }
+                    } catch (innerErr) {
+                        reject(innerErr);
                     }
-                    else {//No data
-                        resolve(response.body.Results);
-                    }
-                }
-                catch {
-                }
+                });
+            });
+
+            return result;
+
+        } catch (error) {
+            const isLastAttempt = attempt === MAX_ATTEMPTS;
+
+            if (isLastAttempt) {
+                console.error('[mc.getDERows] All retry attempts failed.');
+                throw error; // Final rejection
             }
-        });
-    });
-},
+            await wait(RETRY_DELAY_MS * attempt); 
+        }
+    }
+};
 
 mc.createDERow = async (dataExtensionName, Record) => {
 

@@ -22,7 +22,7 @@ util.getViberAccessToken = async (oaIdOrAppId) => {
 
     let oaRecords = await mc.getDERows(config.sfmc.senderDe, ['Access_Token'], {
         'leftOperand' : {
-            'leftOperand': 'OA_ID',
+            'leftOperand': 'OA_Key',
             'operator': 'equals',
             'rightOperand': oaIdOrAppId
         },

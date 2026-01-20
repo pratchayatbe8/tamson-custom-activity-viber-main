@@ -20,7 +20,7 @@ router.get('/index.html', async (req, res) => {
 
         var viberAccount = await controller.getDERows(
             config.sfmc.senderDe,
-            ["OA_ID", "OA_Name"],
+            ["OA_ID", "OA_Name", "OA_Key"],
             null
         );
 

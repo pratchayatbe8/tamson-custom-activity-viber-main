@@ -107,6 +107,7 @@ function initialize(data) {
         viberContentId: currentVIBERContent = '',
         viberContentName: currentVIBERContentName = '',
         viberAccount: currentVIBERAccount = '',
+        viberAccountKey: currentVIBERAccountKey = '',
         viberAccountName: currentVIBERAccountName = '',
         messageName: currentMessageName = '',
     } = inArguments[0];
@@ -147,7 +148,7 @@ function initialize(data) {
 
             // --- Update UI: Account Option ---
             const accountOption = document.querySelector(
-                `.slds-listbox__item[data-value="${currentVIBERAccount}"][data-id="option-account"]`
+                `.slds-listbox__item[data-key="${currentVIBERAccountKey}"][data-id="option-account"]`
             );
             if (accountOption) {
                 setCheckIcon(accountOption);
@@ -215,6 +216,7 @@ function save() {
         viberContentId: getCheckedAttr('select-content', 'data-value'),
         viberContentName: getCheckedAttr('select-content', 'data-name'),
         viberAccount: getCheckedAttr('select-account', 'data-value'),
+        viberAccount: getCheckedAttr('select-account', 'data-key'),
         viberAccountName: getCheckedAttr('select-account', 'data-name'),
         viberContentObject: sharedObject.payload.viberContentObject,
         activityId: sharedObject.payload.id,

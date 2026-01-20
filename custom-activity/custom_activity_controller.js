@@ -60,13 +60,14 @@ async function process(body) {
         // 'Journey_Version': obj.settings.journeyVersion,
         'Message_Type': obj.messageType,
         'OA_ID': obj.viberAccount,
+        'OA_KEY': obj.viberAccountKey,
         'OA_Name': obj.viberAccountName,
         'Activity_ID': body.activityId,
     };
 
     try {
 
-        const token = await util.getViberAccessToken(obj.viberAccount);
+        const token = await util.getViberAccessToken(obj.viberAccountKey);
         let viberPayload = {};
 
         if (obj.messageType === 'ViberOA') {
@@ -99,6 +100,9 @@ async function process(body) {
                     "action_link": uData ? uData.formActionLink : "",
                     "image": uData ? uData.photo : ""
                 }
+            }
+            if (process.env.DEBUG_LOG === 'true') {
+                console.log('[process] DEBUG: viberPayload: ', viberPayload);
             }
 
         }

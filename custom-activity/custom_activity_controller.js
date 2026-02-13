@@ -70,6 +70,10 @@ async function process(body) {
         const token = await util.getViberAccessToken(obj.viberAccountKey);
         let viberPayload = {};
 
+        const sentDate = new Date();
+        mcRecord['Sent_Date'] = sentDate.toISOString();
+        mcRecord['Template_ID'] = obj.viberContentId;
+
         if (obj.messageType === 'ViberOA') {
             const content = obj.viberContentObject;
 
@@ -109,9 +113,7 @@ async function process(body) {
         }
         // console.log('[process] DEBUG: viberPayload: ', viberPayload);
 
-        const sentDate = new Date();
-        mcRecord['Sent_Date'] = sentDate.toISOString();
-        mcRecord['Template_ID'] = obj.viberContentId;
+       
 
         const viberResponse = await viber.sendMessage(token, viberPayload);
 

@@ -98,7 +98,8 @@ async function process(body) {
                     "message": viberMessage.text,
                     "action_text": uData ? uData.formActionText : "",
                     "action_link": uData ? uData.formActionLink : "",
-                    "image": uData ? uData.photo : ""
+                    "image": uData ? uData.photo : "",
+                    "ttl": 3600
                 }
             }
             console.log('[process] DEBUG: viberPayload: ', viberPayload);
@@ -126,7 +127,14 @@ async function process(body) {
             logger.error(`[Viber Response Error] - ${obj.contactKey}-${obj.uid} - ${JSON.stringify(viberResponse)}`);
             mcRecord['API_Response_Error'] = viberResponse.message;
             mcRecord['API_Response_Code'] = viberResponse.error;
-            viberMessageId = `${activityRequestId}`;
+
+            if(viberResponse.data && viberResponse.data.transaction_id){
+                viberMessageId = `${viberResponse.data.transaction_id}`;
+            }
+            else{
+                viberMessageId = `${activityRequestId}`;
+            }
+
         }
 
         mcRecord['Message_ID'] = viberMessageId;

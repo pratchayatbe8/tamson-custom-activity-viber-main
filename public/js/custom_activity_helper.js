@@ -310,7 +310,10 @@ export function loadPreviewContent(content, selectedOA, isLoad) {
                 if (!isLoad) showSpinner(false);
 
             })
-            .catch((err) => console.log('Error occurred in loadPreviewContent: ', err));
+            .catch(err => {
+                console.log('Error occurred in loadPreviewContent: ', err);
+                if (!isLoad) showSpinner(false);
+            })
     }
     else {
         if (!isLoad) showSpinner(false);

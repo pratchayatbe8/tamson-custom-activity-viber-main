@@ -203,7 +203,8 @@ controller.getViberMessages = () => {
 }
 
 controller.getCustomContentBlocks = async () => {
-    let fields = ['Id', 'Name', 'meta'],
+    let fields = ['Id', 'Name', 'meta','createdDate','modifiedDate'],
+    
         viberFolderName = config.sfmcContentCategories.customBlockPrefix,
         assetTypeId = config.sfmcAssetTypes.customBlock;
 

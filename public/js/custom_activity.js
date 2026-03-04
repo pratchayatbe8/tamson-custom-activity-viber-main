@@ -198,14 +198,14 @@ function save() {
 
     const inArgument = {
         contactKey: '{{Contact.Key}}',
-        uid: `{{Event.${eventDefinitionKey}."${uidField}"}}`
+        uid: "{{Event." + eventDefinitionKey + ".\"" + uidField + "\"}}"
     };
 
     // Add target values for personalization
     inArgument.targetValues = {};
 
     sharedObject.targetFields.forEach(field => {
-        inArgument.targetValues[field] = `{{Event.${eventDefinitionKey}."${field}"}}`;
+        inArgument.targetValues[field] = "{{Event." + eventDefinitionKey + ".\"" + field + "\"}}";  
     });
 
     Object.assign(inArgument, {
